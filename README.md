@@ -2,6 +2,12 @@
 
 Caeli is a weather application for Android and iOS with a nice design and nice font
 
+### Future Update
+
+- [ ] Forecast
+- [ ] Get Current Location
+
+
 
 ## Built With
 
