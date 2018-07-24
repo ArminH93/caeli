@@ -67,7 +67,7 @@ class _CaeliState extends State<Caeli> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              //Image.asset('images/sunny.png', height: 200.0, width: 200.0),
+              //TODO: Show images of the weather
             ],
           ),
           Container(
@@ -100,7 +100,7 @@ class _CaeliState extends State<Caeli> {
     return new FutureBuilder(
         future: getWeather(util.appId, city == null ? util.defaultCity : city),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.hasData && snapshot.data['cod'].toString() != '404') {
             // content is all the info of the json
             Map content = snapshot.data;
 
@@ -132,7 +132,19 @@ class _CaeliState extends State<Caeli> {
               ),
             );
           } else {
-            return Container();
+            return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 300.0),
+                  Text(
+                    'Stadt nicht gefunden',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontFamily: 'Questrial-Regular',
+                      fontSize: 20.0,
+                    ),
+                  )
+                ]);
           }
         });
   }
@@ -174,47 +186,49 @@ class ChangeCityState extends State<ChangeCity> {
                   tileMode: TileMode.clamp),
             ),
           ),
-          Center(
-            child: ListView(
-              padding: const EdgeInsets.all(20.0),
-              children: <Widget>[
-                ListTile(
-                  title: Form(
-                    key: _formKey,
-                    child: TextFormField(
-                      key: new Key('_city'),
-                      initialValue: _city,
-                      validator: (val) =>
-                          val.isEmpty ? 'Cannot be empty.' : null,
-                      decoration: new InputDecoration(
-                        labelStyle: TextStyle(color: Colors.white),
-                        labelText: 'Enter a City',
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: widget._cityFieldController,
-                      keyboardType: TextInputType.text,
-                      autofocus: true,
+          ListView(
+            padding: const EdgeInsets.all(20.0),
+            children: <Widget>[
+              ListTile(
+                title: Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    style: TextStyle(color: Colors.white),
+                    autocorrect: true,
+                    key: new Key('_city'),
+                    initialValue: _city,
+                    validator: (val) =>
+                        val.isEmpty ? 'Darf nicht leer sein.' : null,
+                    decoration: new InputDecoration(
+                      labelStyle: TextStyle(color: Colors.white),
+                      labelText: 'Bitte eine Stadt eingeben',
+                      border: OutlineInputBorder(),
                     ),
+                    controller: widget._cityFieldController,
+                    keyboardType: TextInputType.text,
+                    autofocus: true,
                   ),
                 ),
-                ListTile(
-                  title: FlatButton(
-                      onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          Navigator.pop(context,
-                              {'enter': widget._cityFieldController.text});
-                        }
-                      },
-                      child: Text(
-                        'Get Weather',
+              ),
+              ListTile(
+                title: FlatButton.icon(
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        Navigator.pop(context,
+                            {'enter': widget._cityFieldController.text});
+                      }
+                    },
+                    label: Text('Bestätigen',
                         style: TextStyle(
                             color: Colors.white,
                             fontFamily: 'Comfortaa-Regular',
-                            fontSize: 20.0),
-                      )),
-                )
-              ],
-            ),
+                            fontSize: 20.0)),
+                    icon: Icon(
+                      Icons.cloud,
+                      color: Colors.white,
+                    )),
+              )
+            ],
           )
         ],
       ),

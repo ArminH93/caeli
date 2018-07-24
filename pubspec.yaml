@@ -60,6 +60,9 @@ flutter:
     - family: Comfortaa-Regular
       fonts:
         - asset: fonts/Comfortaa-Regular.ttf
+    - family: Questrial-Regular
+      fonts:
+        - asset: fonts/Questrial-Regular.ttf
 
 
 
