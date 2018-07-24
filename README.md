@@ -1,8 +1,20 @@
-# caeli
+# Caeli
 
-A new Flutter project.
+Caeli is a weather application for Android and iOS with a nice design and nice font
 
-## Getting Started
+### Future Update
 
+- [ ] Forecast
+- [ ] Get current location
+- [ ] Create nice animations
+
+
+
+## Built With
+
+* [OpenWeatherMap](https://openweathermap.org/api) - Weather API information
+
+
+## Flutter
 For help getting started with Flutter, view our online
 [documentation](https://flutter.io/).
