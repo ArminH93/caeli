@@ -1,6 +1,6 @@
 # Caeli
 
-Caeli is a weather application for Android and iOS with a nice design and font
+Caeli is a weather application for Android and iOS with a nice design and nice font
 
 
 ## Built With
