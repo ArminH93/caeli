@@ -5,7 +5,7 @@ Caeli is a weather application for Android and iOS with a nice design and nice f
 ### Future Update
 
 - [ ] Forecast
-- [ ] Get Current Location
+- [ ] Get current location
 
 
 
