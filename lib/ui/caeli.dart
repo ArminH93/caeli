@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'colors.dart';
 import 'package:caeli/util/utils.dart' as util;
 import 'package:http/http.dart' as http;
-import 'package:location/location.dart';
-import 'package:flutter/services.dart';
+import 'package:caeli/ui/second_screen.dart';
 
 class Caeli extends StatefulWidget {
   @override
@@ -34,6 +34,10 @@ class _CaeliState extends State<Caeli> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown
+    ]);
     return Scaffold(
       appBar: new AppBar(
         centerTitle: true,
@@ -64,24 +68,9 @@ class _CaeliState extends State<Caeli> {
                   tileMode: TileMode.clamp),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              //TODO: Show images of the weather
-            ],
-          ),
           Container(
             child: updateTempWidget(_cityEntered),
-            margin: const EdgeInsets.only(bottom: 120.0),
-          ),
-          Center(
-            child: new Text(
-              '${_cityEntered == null ? util.defaultCity : _cityEntered}',
-              style: TextStyle(
-                  fontFamily: 'Comfortaa-Regular',
-                  fontSize: 40.0,
-                  color: Colors.white),
-            ),
+            margin: const EdgeInsets.only(bottom: 160.0),
           ),
         ],
       ),
@@ -98,140 +87,87 @@ class _CaeliState extends State<Caeli> {
 
   Widget updateTempWidget(String city) {
     return new FutureBuilder(
+        // set defaultCity when app is loaded
         future: getWeather(util.appId, city == null ? util.defaultCity : city),
         builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+          // Code 404: City not found
           if (snapshot.hasData && snapshot.data['cod'].toString() != '404') {
             // content is all the info of the json
             Map content = snapshot.data;
 
-            return ListTile(
-              title: Center(
-                child: Text(
-                  "${content['main']['temp'].round().toString()}°",
-                  style: TextStyle(
-                      fontFamily: 'Comfortaa-Regular',
-                      fontSize: 40.0,
-                      color: Colors.white),
-                ),
-              ),
-              subtitle: new ListTile(
-                title: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: new Text(
-                        "Min: ${content['main']['temp_min'].toString()}°            "
-                            "Max: ${content['main']['temp_max'].toString()}°",
-                        style: TextStyle(
-                            fontFamily: 'Comfortaa-Regular',
-                            color: Colors.white),
-                      ),
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+//                Image.asset(
+//                  'images/sunny.png',
+//                  height: 200.0,
+//                ),
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(60.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "${content['main']['temp'].round().toString()}°",
+                          style: TextStyle(
+                              fontFamily: 'Comfortaa-Regular',
+                              fontSize: 40.0,
+                              color: Colors.white),
+                        ),
+                        Text(
+                          '${_cityEntered == null
+                                ? util.defaultCity
+                                : _cityEntered}, ${content['sys']['country']}',
+                          style: TextStyle(
+                              fontFamily: 'Comfortaa-Regular',
+                              fontSize: 40.0,
+                              color: Colors.white),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: <Widget>[
+                              Text(
+                                "Min: ${content['main']['temp_min'].toString()}°",
+                                style: TextStyle(
+                                    fontFamily: 'Comfortaa-Regular',
+                                    color: Colors.white),
+                              ),
+                              Text(
+                                "Max: ${content['main']['temp_max'].toString()}°",
+                                style: TextStyle(
+                                    fontFamily: 'Comfortaa-Regular',
+                                    color: Colors.white),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             );
           } else {
             return Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   const SizedBox(height: 300.0),
-                  Text(
-                    'Stadt nicht gefunden',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontFamily: 'Questrial-Regular',
-                      fontSize: 20.0,
+                  Center(
+                    child: Text(
+                      'Stadt nicht gefunden \n\n'
+                          'Bitte neue Suchabfrage starten',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontFamily: 'Questrial-Regular',
+                        fontSize: 20.0,
+                      ),
                     ),
                   )
                 ]);
           }
         });
-  }
-}
-
-class ChangeCity extends StatefulWidget {
-  final _cityFieldController = new TextEditingController();
-  @override
-  ChangeCityState createState() {
-    return new ChangeCityState();
-  }
-}
-
-class ChangeCityState extends State<ChangeCity> {
-  final _formKey = new GlobalKey<FormState>();
-  String _city;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.deepPurple,
-        title: Text(
-          'Caeli',
-          style: TextStyle(fontFamily: 'Comfortaa-Regular'),
-        ),
-        centerTitle: true,
-      ),
-      body: new Stack(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [gradientEnd, gradientStart],
-                  begin: FractionalOffset(0.5, 0.0),
-                  end: FractionalOffset(0.5, 0.7),
-                  stops: [0.0, 1.0],
-                  tileMode: TileMode.clamp),
-            ),
-          ),
-          ListView(
-            padding: const EdgeInsets.all(20.0),
-            children: <Widget>[
-              ListTile(
-                title: Form(
-                  key: _formKey,
-                  child: TextFormField(
-                    style: TextStyle(color: Colors.white),
-                    autocorrect: true,
-                    key: new Key('_city'),
-                    initialValue: _city,
-                    validator: (val) =>
-                        val.isEmpty ? 'Darf nicht leer sein.' : null,
-                    decoration: new InputDecoration(
-                      labelStyle: TextStyle(color: Colors.white),
-                      labelText: 'Bitte eine Stadt eingeben',
-                      border: OutlineInputBorder(),
-                    ),
-                    controller: widget._cityFieldController,
-                    keyboardType: TextInputType.text,
-                    autofocus: true,
-                  ),
-                ),
-              ),
-              ListTile(
-                title: FlatButton.icon(
-                    onPressed: () {
-                      if (_formKey.currentState.validate()) {
-                        Navigator.pop(context,
-                            {'enter': widget._cityFieldController.text});
-                      }
-                    },
-                    label: Text('Bestätigen',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Comfortaa-Regular',
-                            fontSize: 20.0)),
-                    icon: Icon(
-                      Icons.cloud,
-                      color: Colors.white,
-                    )),
-              )
-            ],
-          )
-        ],
-      ),
-    );
   }
 }
